@@ -1,3 +1,5 @@
+import 'package:github_client/github_oauth_credentials.dart';
+
 import 'github_login_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:github_client/github_login_widget.dart';
@@ -53,9 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final String title = 'Fake Github';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ) {
     return GithubLoginWidget(
-        builder: (context) {
+        builder: (context, client) {
           return Scaffold(
             appBar: AppBar(
               title: Text(title),
@@ -64,7 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text( 'You are logged into Github!')
             ),
           );
-        }
+        },
+        githubClientId: githubClientId,
+      githubClientSecret: githubClientSecret,
+      githubScopes: githubScopes,
     );
   }
 }
