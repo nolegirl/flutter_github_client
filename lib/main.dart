@@ -3,6 +3,8 @@ import 'package:github_client/github_oauth_credentials.dart';
 import 'github_login_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:github_client/github_login_widget.dart';
+import 'package:github/github.dart';
+import 'package:window_to_front/window_to_front.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,20 +59,32 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context, ) {
     return GithubLoginWidget(
-        builder: (context, client) {
+        githubClientId: githubClientId,
+        githubClientSecret: githubClientSecret,
+        githubScopes: githubScopes,
+        builder: (context, httpClient) {
+          WindowToFront.activate();
+          return FutureBuilder<CurrentUser>(
+            future: viewerDetail(httpClient.credentials.accessToken),
+              builder: (context, snapshot) {
+              String text = snapshot.hasData ? 'Hello ${snapshot.data!.login}' : 'Retrieving viewer login details...';
           return Scaffold(
             appBar: AppBar(
               title: Text(title),
             ),
-            body: const Center(
-                child: Text( 'You are logged into Github!')
+            body: Center(
+                child: Text(text)
             ),
           );
         },
-        githubClientId: githubClientId,
-      githubClientSecret: githubClientSecret,
-      githubScopes: githubScopes,
+          );
+  }
     );
+  }
+
+  Future<CurrentUser> viewerDetail(accessToken) {
+    final github = GitHub(auth: Authentication.withToken(accessToken));
+    return github.users.getCurrentUser();
   }
 }
 
